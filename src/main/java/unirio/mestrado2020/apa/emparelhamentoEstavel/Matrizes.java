@@ -43,6 +43,16 @@ public class Matrizes {
 	public static String HARD_SM_700  = BASE_PATH +"hard\\hard_sm_700.txt";
 	public static String HARD_SM_800  = BASE_PATH +"hard\\hard_sm_800.txt";
 	public static String HARD_SM_900  = BASE_PATH +"hard\\hard_sm_900.txt";
-	public static String HARD_SM_1000 = BASE_PATH +"hard\\hard_sm_1000.txt";		
+	public static String HARD_SM_1000 = BASE_PATH +"hard\\hard_sm_1000.txt";	
 	
+	
+	public static String getFileName(String tipo, int n){
+		return BASE_PATH +tipo +"\\"+tipo+"_sm_"+n+".txt";
+	}
+	
+	
+	public static void main(String[] args) {
+		long nn = 10;
+		System.out.println(nn/3);
+	}
 }

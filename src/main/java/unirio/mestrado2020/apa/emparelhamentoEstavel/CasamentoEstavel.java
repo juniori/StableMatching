@@ -36,39 +36,33 @@ public class CasamentoEstavel {
 		this.isLogHabilitado = isHabilitarLog;
 	}
 
-	public void processar(int[] homens, int[] mulheres, int[][] homensPrefs, int[][] mulheresPrefs) {
+	public void processar(int[][] homensPrefs, int[][] mulheresPrefs, int[][] ranking) {
 
 		int N = homensPrefs.length;
 		int[] ultimaMulherProposta = new int[N];
 		int[] parceiroAtual = new int[N];
-		int[][] ranking = new int[N][N];
 		Lista solteiros = new Lista();
 
 		// Inicializo todos os homens como solteiros
-		for (int i = 0; i < N; i++) {
-			solteiros.inserirFim(i);
-			ultimaMulherProposta[homens[i]] = 0;
-			parceiroAtual[mulheres[i]] = -1;
+		for (int i = N -1; i > 0; i--) {
+			solteiros.inserirInicio(i);
+			ultimaMulherProposta[i] = 0;
+			parceiroAtual[i] = -1;
 		}
 
 		// Enquanto existir homem solteiro que não se propôs à toda mulher
 		int solteiro;
-		while ((solteiro = solteiros.getPrimeiro()) != -1 && ultimaMulherProposta[solteiro] < N ) {
+		while ((solteiro = solteiros.getPrimeiro()) != -1 && ultimaMulherProposta[solteiro] < N) {
 
-
-			int proponente = homens[solteiro];
+			int proponente = solteiro;
 
 			int preferidaIndice = ultimaMulherProposta[solteiro]++;
 
 			int preferida = homensPrefs[solteiro][preferidaIndice];
 
-			for (int i = 0; i < N; i++) {
-				ranking[preferida][mulheresPrefs[preferida][i]] = i;
-			}
-
 			if (parceiroAtual[preferida] == -1) {
 				parceiroAtual[preferida] = proponente;
-				addCasal(mulheres[preferida], proponente);
+				addCasal(preferida, proponente);
 				solteiros.retirarInicio();
 			} else {
 
@@ -83,7 +77,7 @@ public class CasamentoEstavel {
 					solteiros.retirarInicio();
 					solteiros.inserirInicio(pAtual);
 					parceiroAtual[preferida] = proponente;
-					addCasal(mulheres[preferida], proponente);
+					addCasal(preferida, proponente);
 				}
 
 			}

@@ -5,29 +5,29 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.Arrays;
+import java.util.HashMap;
+import java.util.Map;
 
 public class LoadManager {
 
-	private String fileName = null;
 	private int matrizSize = 0;
 	private int mansPrefsStartLine = 0;
 	private int mansPrefsEndLine = 0;
 	private int womesPrefsStartLine = 0;
 	private int womesPrefsEndLine = 0;
 	Boolean isLogHabilitado = false;
+	public Map<String, Preferencia> mapPrefs = new HashMap<String, Preferencia>();
+	public static int[] tamanhos = { 5, 50, 100, 200, 300, 400, 500, 600, 700, 800, 900, 1000 };
+	public static String[] tipos = { "best", "ale", "hard" };
 
-	public LoadManager(String fileName, Boolean isHabilitarLog) throws NumberFormatException, IOException {
+	public LoadManager(Boolean isHabilitarLog) throws NumberFormatException, IOException {
 		super();
-		this.fileName = fileName;
 		this.isLogHabilitado = isHabilitarLog;
-		this.init();
-		
-		
 	}
 
-	public void init() throws NumberFormatException, IOException {
+	private void carregarArquivo(String filename) throws NumberFormatException, IOException {
 
-		File file = new File(this.fileName);
+		File file = new File(filename);
 
 		BufferedReader br = new BufferedReader(new FileReader(file));
 
@@ -58,19 +58,42 @@ public class LoadManager {
 
 		this.log("File name: " + file.getAbsolutePath());
 		this.log("N \t" + this.getMatrizSize());
-		//this.log("mansPrefsStartLine: " + this.getMensPrefsStartLine() + " - " + this.getMensPrefsEndLine());
-		//this.log("womesPrefsStartLine: " + this.getWomesPrefsStartLine() + " - " + this.getWomesPrefsEndLine());
+		// this.log("mansPrefsStartLine: " + this.getMensPrefsStartLine() + " -
+		// " + this.getMensPrefsEndLine());
+		// this.log("womesPrefsStartLine: " + this.getWomesPrefsStartLine() + "
+		// - " + this.getWomesPrefsEndLine());
 
 	}
 
+	public Preferencia importar(String fileName) throws IOException {
+		this.carregarArquivo(fileName);
+		Preferencia p = new Preferencia();
+		p.setPrefHomens(importarMatrizPref(fileName, SexoEnum.HOMEM));
+		p.setPrefMulheres(importarMatrizPref(fileName, SexoEnum.MULHER));
+		return p;
+	}
+
+	public Preferencia importarTodos(int[] tamanhos) throws IOException {
+
+		Preferencia p = new Preferencia();
+
+		for (String tipo : tipos) {
+			for (int n : tamanhos) {
+				mapPrefs.put(tipo + "_" + n, importar(Matrizes.getFileName(tipo, n)));
+			}
+		}
+
+		return p;
+	}
+
 	private void log(String str) {
-		
+
 		if (this.isLogHabilitado) {
 			System.out.println(str);
 		}
 	}
 
-	public int[][] importarMatrizPref(SexoEnum sexo) throws IOException {
+	public int[][] importarMatrizPref(String fileName, SexoEnum sexo) throws IOException {
 
 		int startLine, endLine;
 
@@ -82,7 +105,7 @@ public class LoadManager {
 			endLine = this.womesPrefsEndLine;
 		}
 
-		File file = new File(this.fileName);
+		File file = new File(fileName);
 		BufferedReader br = new BufferedReader(new FileReader(file));
 
 		int preferenciasPorPessoa[][] = new int[this.matrizSize][this.matrizSize];
@@ -119,7 +142,7 @@ public class LoadManager {
 		return mulheres;
 	}
 
-	public int[] obterMulheresUnicos(int[][] homensPrefs) {
+	public int[] obterMulheresUnicas(int[][] homensPrefs) {
 		int homens[] = Arrays.copyOf(homensPrefs[0], homensPrefs[0].length);
 		Arrays.sort(homens);
 		return homens;
@@ -127,8 +150,9 @@ public class LoadManager {
 
 	public void listarMatrizPref(int[][] matrizPref, String titulo) {
 
-		if (!this.isLogHabilitado) return;
-		
+		if (!this.isLogHabilitado)
+			return;
+
 		System.out.println(titulo);
 
 		for (int i = 0; i < matrizPref.length; i++) {
@@ -140,14 +164,6 @@ public class LoadManager {
 			System.out.println(str);
 		}
 
-	}
-
-	public String getFileName() {
-		return fileName;
-	}
-
-	public void setFileName(String fileName) {
-		this.fileName = fileName;
 	}
 
 	public int getMatrizSize() {
