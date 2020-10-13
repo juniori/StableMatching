@@ -4,7 +4,6 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -73,12 +72,12 @@ public class LoadManager {
 		return p;
 	}
 
-	public Preferencia importarTodos(int[] tamanhos) throws IOException {
+	public Preferencia importarTodos() throws IOException {
 
 		Preferencia p = new Preferencia();
 
 		for (String tipo : tipos) {
-			for (int n : tamanhos) {
+			for (int n : LoadManager.tamanhos) {
 				mapPrefs.put(tipo + "_" + n, importar(Matrizes.getFileName(tipo, n)));
 			}
 		}
@@ -89,7 +88,7 @@ public class LoadManager {
 	private void log(String str) {
 
 		if (this.isLogHabilitado) {
-			System.out.println(str);
+			// System.out.println(str);
 		}
 	}
 
@@ -134,18 +133,6 @@ public class LoadManager {
 		br.close();
 
 		return preferenciasPorPessoa;
-	}
-
-	public int[] obterHomensUnicos(int[][] mulheresPrefs) {
-		int mulheres[] = Arrays.copyOf(mulheresPrefs[0], mulheresPrefs[0].length);
-		Arrays.sort(mulheres);
-		return mulheres;
-	}
-
-	public int[] obterMulheresUnicas(int[][] homensPrefs) {
-		int homens[] = Arrays.copyOf(homensPrefs[0], homensPrefs[0].length);
-		Arrays.sort(homens);
-		return homens;
 	}
 
 	public void listarMatrizPref(int[][] matrizPref, String titulo) {

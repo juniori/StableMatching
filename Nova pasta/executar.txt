@@ -1,1 +1,0 @@
-java -Xms512M -Xmx1524M -Xint-Djava.compiler=NONE -jar stable.jar 100

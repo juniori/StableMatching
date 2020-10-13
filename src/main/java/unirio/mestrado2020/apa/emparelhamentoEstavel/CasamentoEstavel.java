@@ -1,50 +1,21 @@
 package unirio.mestrado2020.apa.emparelhamentoEstavel;
 
-import java.util.ArrayList;
-import java.util.List;
-
-/*
- * Video mostrando o chines
-
-https://www.sanfoundry.com/java-program-gale-shapley-algorithm/#:~:text=Gale%20Shapley%20Algorithm%20is%20used,of%20preferences%20for%20each%20element.&text=Here%20is%20the%20source%20code,to%20Implement%20Gale%20Shapley%20Algorithm
-https://www.youtube.com/watch?v=0m_YW1zVs-Q&t=3s
-
-Inicializar cada pessoa como livre
-
-enquanto(existir homem solteiro que não se propôs à toda mulher){
-	m = selecionar um homem
-	w = 1ª  mulher na lista que ele ainda não propos
-	if (w is free){
-		noiva m e w
-	}else if (w prefere m ao seu parceiro atual){
-		noiva m e w e seta o parceiro para livre
-	}else{
-		w rejeita m
-	}
-}
-
-Ranking slide 84 da 2º aula: https://moodleccet.uniriotec.br/pluginfile.php/18650/mod_resource/content/6/AA-02-Analise.pdf
-
-
-*/
 public class CasamentoEstavel {
 
-	private List<String> casais = new ArrayList<String>();
-	Boolean isLogHabilitado = false;
+	public CasamentoEstavel() {
 
-	public CasamentoEstavel(Boolean isHabilitarLog) {
-		this.isLogHabilitado = isHabilitarLog;
 	}
 
-	public void processar(int[][] homensPrefs, int[][] mulheresPrefs, int[][] ranking) {
+	public int processar(int[][] homensPrefs, int[][] mulheresPrefs, int[][] ranking, boolean isDebug) {
 
 		int N = homensPrefs.length;
 		int[] ultimaMulherProposta = new int[N];
 		int[] parceiroAtual = new int[N];
 		Lista solteiros = new Lista();
+		int qtdInteracoes = 0;
 
 		// Inicializo todos os homens como solteiros
-		for (int i = N -1; i > 0; i--) {
+		for (int i = N - 1; i >= 0; i--) {
 			solteiros.inserirInicio(i);
 			ultimaMulherProposta[i] = 0;
 			parceiroAtual[i] = -1;
@@ -62,73 +33,45 @@ public class CasamentoEstavel {
 
 			if (parceiroAtual[preferida] == -1) {
 				parceiroAtual[preferida] = proponente;
-				addCasal(preferida, proponente);
+				printCasal(++qtdInteracoes, preferida, proponente, isDebug);
 				solteiros.retirarInicio();
 			} else {
 
 				int pAtual = parceiroAtual[preferida];
 
-				// Verifica se a mulher prefere seu proponente ao seu atual
-				boolean isPrefereAtual = (ranking[preferida][pAtual] < ranking[preferida][proponente]) ? true : false;
-
-				if (isPrefereAtual) {
-					addCasal(-1, proponente);
+				// Se a mulher prefere seu proponente ao seu atual em O(1)
+				if (ranking[preferida][pAtual] < ranking[preferida][proponente]) {
+					printCasal(++qtdInteracoes, -1, proponente, isDebug);
 				} else {
+
+					// Remove da lista de solteiros o homem que props
 					solteiros.retirarInicio();
+
+					// Retorna com o parceiro atual para lista de solteiros
 					solteiros.inserirInicio(pAtual);
+
 					parceiroAtual[preferida] = proponente;
-					addCasal(preferida, proponente);
+
+					printCasal(++qtdInteracoes, preferida, proponente, isDebug);
 				}
 
 			}
 
 		}
 
-		printRanking(ranking);
-		printCasais();
+		return qtdInteracoes;
 
 	}
 
-	private void addCasal(int w, int m) {
+	private void printCasal(int interacao, int w, int m, boolean isDebug) {
 
-		if (!this.isLogHabilitado)
+		if (!isDebug)
 			return;
 
-		if (w == -1) {
-			casais.add("m:" + m);
-		} else {
-			casais.add("m:" + m + " w:" + w);
-		}
-
-	}
-
-	private void printCasais() {
-
-		if (!this.isLogHabilitado)
-			return;
-
-		System.out.println("RESULTADO");
-
-		for (int i = 0; i < casais.size(); i++) {
-			System.out.println(i + 1 + " - " + casais.get(i));
-		}
-	}
-
-	public void printRanking(int[][] ranking) {
-
-		if (!this.isLogHabilitado)
-			return;
-
-		System.out.println("RANKING");
-
-		for (int i = 0; i < ranking.length; i++) {
-
-			String str = "";
-			for (int j = 0; j < ranking.length; j++) {
-				str = str + ranking[i][j] + ((j != ranking.length - 1) ? ", " : "");
-			}
-			System.out.println(str);
-		}
+		if (w == -1)
+			System.out.println(interacao + " - m:" + m);
+		else
+			System.out.println(interacao + " - m:" + m + " w:" + w);
 
 	}
 

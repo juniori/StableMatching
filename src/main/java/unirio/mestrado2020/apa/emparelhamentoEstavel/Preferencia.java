@@ -21,34 +21,6 @@ public class Preferencia {
 		this.prefMulheres = prefMulheres;
 	}
 
-	public void listarPrefMulheres() {
-		listarPrefs("WOMEN'S PREFERENCES", prefMulheres);
-	}
-
-	public void listarPrefHomens() {
-		listarPrefs("MEN'S PREFERENCES", prefHomens);
-	}
-
-	public void listarPrefs() {
-		listarPrefHomens();
-		listarPrefMulheres();
-	}
-
-	private void listarPrefs(String titulo, int[][] prefs) {
-
-		System.out.println(titulo);
-
-		for (int i = 0; i < prefs.length; i++) {
-
-			String str = "";
-			for (int j = 0; j < prefs.length; j++) {
-				str = str + prefs[i][j] + ((j != prefs.length - 1) ? ", " : "");
-			}
-			System.out.println(str);
-		}
-
-	}
-
 	public int[][] getRanking() {
 
 		int N = prefHomens.length;

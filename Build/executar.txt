@@ -1,0 +1,5 @@
+java -Xms512M -Xmx1524M -Xint-Djava.compiler=NONE -jar casamento.jar
+
+java -jar casamento.jar -help
+
+java -jar casamento.jar true|false
