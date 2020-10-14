@@ -1,0 +1,1 @@
+ java -Xms512M -Xmx1524M -Xint-Djava.compiler=NONE -showversion -jar casamento.jar
