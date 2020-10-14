@@ -10,82 +10,47 @@ import java.util.Scanner;
  */
 public class Principal {
 
-	static boolean isDebug = false;
+	static String saida = "c"; // (c),(t),(i);
 	static int execucoes = 1;
+	static String[] tiposInstancia = { "ale", "best", "hard" };
+	static int tamanhosInstancia[] = { 5, 50, 100, 200, 300, 400, 500, 600, 700, 800, 900, 1000 };
 
-	static String[] tipos = { "ale", "best", "hard" };
+	public static void main(String[] args) throws IOException {
 
-	static int tamanhos[] = { 5, 50, 100, 200, 300, 400, 500, 600, 700, 800, 900, 1000 };
+		// Leitura dos parâmetros de tela
+		lerParametrosTela(args);
 
-	public static void main(String[] args) throws NumberFormatException, IOException, URISyntaxException {
-
-		if (args != null && args.length > 0 && args[0] != null) {
-			String p0 = String.valueOf(args[0]);
-			if (p0.equals("-help")) {
-				System.out.println("debug:[true|false] - Se debug = true, então o programa exibirá a lista de preferências, ranking e casais.");
-				System.exit(0);
-			}
-		}
-
-		if (args != null && args.length > 0 && args[0] != null) {
-
-			isDebug = Boolean.valueOf(args[0]);
-
-			Scanner keyboard = new Scanner(System.in);
-
-			if (isDebug) {
-				System.out.println("Informe um Tipo (ale | best | hard):");
-				String textTipo = keyboard.nextLine();
-				tipos = new String[1];
-				tipos[0] = textTipo;
-
-				System.out.println("Informe o tamanho para N: (5|50|100|200|300|400|500|600|700|800|900|1000");
-				String textTamanho = keyboard.nextLine();
-				tamanhos = new int[1];
-				tamanhos[0] = Integer.valueOf(textTamanho);
-			} else {
-				System.out.println("Número de execuções para ser apurada a média do tempo das execuções:");
-				String textExecucoes = keyboard.nextLine();
-				execucoes = Integer.valueOf(textExecucoes);
-			}
-
-		}
-
-		LoadManager lm = new LoadManager(isDebug);
-		System.out.println("Realizando leitura dos arquivos...");
-		lm.importarTodos();
-		System.out.println("Arquivos lidos!");
-
-		if (!isDebug) {
+		if (!saida.equals("c")) {
 			System.out.print("\nN");
-			for (String tipo : tipos) {
+			for (String tipo : tiposInstancia) {
 				System.out.print(";" + tipo);
 			}
 		}
 
-		for (int tamanho : tamanhos) {
+		for (int tamanho : tamanhosInstancia) {
 
-			if (!isDebug) {
+			if (!saida.equals("c")) {
 				System.out.print("\n" + tamanho);
 			}
 
-			for (String tipo : tipos) {
+			for (String tipo : tiposInstancia) {
 
-				if (isDebug) {
+				if (saida.equals("c")) {
 					System.out.println("\n" + tipo + " INSTANCE STABLE MARIAGE ");
 					System.out.println("N \t" + tamanho);
 				}
 
 				// - - - - - - - - - - - - - - - - - - - - -
-				// CARREGAMENTO DOS DADOS
-				// - - - - - - - - - - - - - - - - - - - - -
-				Preferencia p = lm.mapPrefs.get(tipo + "_" + tamanho);
+				// CARREGANDO ARQUIVO CORRESPONDENTE A INSTÂNCIA NA MEMÓRIA
+				// - - - - - - - - - - - - - - - - - - - -
+				LoadManager lm = new LoadManager();
+				Preferencia p = lm.importar(Matrizes.getFileName(tipo, tamanho));
 
 				int[][] prefH = p.getPrefHomens();
 				int[][] prefM = p.getPrefMulheres();
 				int[][] ranking = p.getRanking();
 
-				if (isDebug) {
+				if (saida.equals("c")) {
 					imprimirMatriz("MEN'S PREFERENCES", prefH);
 					imprimirMatriz("WOMEN'S PREFERENCES", prefM);
 					imprimirMatriz("RANKING", ranking);
@@ -93,24 +58,83 @@ public class Principal {
 				}
 
 				CasamentoEstavel c = new CasamentoEstavel();
+				boolean imprimirCasais = saida.equals("c");
+				int iteracoes = 0;
+
+				// - - - - - - - - - - - - - - - - - - - - -
+				// MENSURAÇÃO DO TEMPO
+				// - - - - - - - - - - - - - - - - - - - - -
 
 				long estimatedTime = 0;
-				int interacoes = 0;
-
-				long startTime = System.nanoTime();
 				for (int i = 0; i < execucoes; i++) {
-					interacoes = c.processar(prefH, prefM, ranking, isDebug);
+					long startTime = System.nanoTime();
+					iteracoes = c.processarGaleShapley(prefH, prefM, ranking, imprimirCasais);
 					estimatedTime += (System.nanoTime() - startTime);
 				}
-				estimatedTime = (estimatedTime / execucoes);
+				estimatedTime = estimatedTime / execucoes;
 
-				if (isDebug) {
+				// - - - - - - - - - - - - - - - - - - - - -
+				// IMPRESSÃO DOS RESULTADOS
+				// - - - - - - - - - - - - - - - - - - - - -
+				if (saida.equals("c")) {
 					System.out.println("Tempo de execucao: " + estimatedTime + " nanosegundos.");
+				} else if (saida.equals("i")) {
+					System.out.print(";" + iteracoes);
 				} else {
 					System.out.print(";" + estimatedTime);
 				}
 
 			}
+		}
+
+	}
+
+	private static LoadManager carregarArquivosEntrada() throws IOException {
+		LoadManager lm = new LoadManager();
+		System.out.println("Realizando leitura dos arquivos...");
+		lm.importarTodos();
+		System.out.println("Arquivos lidos!");
+		return lm;
+	}
+
+	private static void lerParametrosTela(String[] args) {
+
+		Scanner keyboard = new Scanner(System.in);
+
+		System.out.println("Informe o tipo de saída desejada (c)asais, (i)terações, (t)empo:");
+		String textSaida = keyboard.nextLine();
+		while (textSaida.equals("")) {
+			textSaida = keyboard.nextLine();
+		}
+		saida = textSaida;
+
+		System.out.println("Informe um Tipo (ale | best | hard ) ou * para todas:");
+		String textTipo = keyboard.nextLine();
+		while (textTipo.equals("")) {
+			textTipo = keyboard.nextLine();
+		}
+		if (!"*".equals(textTipo)) {
+			tiposInstancia = new String[1];
+			tiposInstancia[0] = textTipo.toLowerCase();
+		}
+
+		System.out.println("Informe o tamanho para N: (5|50|100|200|300|400|500|600|700|800|900|1000) ou * para todas:");
+		String textTamanho = keyboard.nextLine();
+		while (textTamanho.equals("")) {
+			textTamanho = keyboard.nextLine();
+		}
+		if (!"*".equals(textTamanho)) {
+			tamanhosInstancia = new int[1];
+			tamanhosInstancia[0] = Integer.valueOf(textTamanho);
+		}
+
+		if (saida.equals("t")) {
+			System.out.println("Número de execuções para ser apurada a média do tempo das execuções:");
+			String textExecucoes = keyboard.nextLine();
+			if (!"".equals(textExecucoes)) {
+				execucoes = Integer.valueOf(textExecucoes);
+			}
+
 		}
 
 	}

@@ -1,77 +1,67 @@
 package unirio.mestrado2020.apa.emparelhamentoEstavel;
 
+import java.util.concurrent.TimeUnit;
+
 public class CasamentoEstavel {
 
 	public CasamentoEstavel() {
 
 	}
 
-	public int processar(int[][] homensPrefs, int[][] mulheresPrefs, int[][] ranking, boolean isDebug) {
-
+	public int processarGaleShapley(int[][] homensPrefs, int[][] mulheresPrefs, int[][] ranking, boolean isDebug) {
+		
 		int N = homensPrefs.length;
-		int[] ultimaMulherProposta = new int[N];
+		int[] indiceUltimaMulherProposta = new int[N];
 		int[] parceiroAtual = new int[N];
 		Lista solteiros = new Lista();
 		int qtdInteracoes = 0;
 
-		// Inicializo todos os homens como solteiros
+		// Inicializa todos os homens como solteiros e sem proposta feita e as
+		// mulheres sem nenhum parceiro.
 		for (int i = N - 1; i >= 0; i--) {
 			solteiros.inserirInicio(i);
-			ultimaMulherProposta[i] = 0;
+			indiceUltimaMulherProposta[i] = 0;
 			parceiroAtual[i] = -1;
 		}
 
-		// Enquanto existir homem solteiro que não se propôs à toda mulher
+		// Enquanto existir homem solteiro
 		int solteiro;
-		while ((solteiro = solteiros.getPrimeiro()) != -1 && ultimaMulherProposta[solteiro] < N) {
+		while ((solteiro = solteiros.getPrimeiro()) != -1) {
 
 			int proponente = solteiro;
 
-			int preferidaIndice = ultimaMulherProposta[solteiro]++;
+			int preferidaIndice = indiceUltimaMulherProposta[solteiro]++;
 
 			int preferida = homensPrefs[solteiro][preferidaIndice];
 
+			// Se a mulher ainda não tem nenhum parceiro
 			if (parceiroAtual[preferida] == -1) {
 				parceiroAtual[preferida] = proponente;
-				printCasal(++qtdInteracoes, preferida, proponente, isDebug);
 				solteiros.retirarInicio();
+				imprimirCasal(++qtdInteracoes, proponente, preferida, isDebug);
 			} else {
-
 				int pAtual = parceiroAtual[preferida];
-
 				// Se a mulher prefere seu proponente ao seu atual em O(1)
 				if (ranking[preferida][pAtual] < ranking[preferida][proponente]) {
-					printCasal(++qtdInteracoes, -1, proponente, isDebug);
+					imprimirCasal(++qtdInteracoes, proponente, -1, isDebug);
 				} else {
-
-					// Remove da lista de solteiros o homem que props
 					solteiros.retirarInicio();
-
-					// Retorna com o parceiro atual para lista de solteiros
 					solteiros.inserirInicio(pAtual);
-
 					parceiroAtual[preferida] = proponente;
-
-					printCasal(++qtdInteracoes, preferida, proponente, isDebug);
+					imprimirCasal(++qtdInteracoes, proponente, preferida, isDebug);
 				}
-
 			}
-
 		}
-
 		return qtdInteracoes;
-
 	}
 
-	private void printCasal(int interacao, int w, int m, boolean isDebug) {
-
+	private void imprimirCasal(int interacao, int man, int woman, boolean isDebug) {
 		if (!isDebug)
 			return;
-
-		if (w == -1)
-			System.out.println(interacao + " - m:" + m);
+		if (woman == -1)
+			System.out.println(interacao + " - m:" + man);
 		else
-			System.out.println(interacao + " - m:" + m + " w:" + w);
+			System.out.println(interacao + " - m:" + man + " w:" + woman);
 
 	}
 

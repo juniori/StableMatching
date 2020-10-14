@@ -4,8 +4,6 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
-import java.net.URISyntaxException;
-import java.net.URL;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -21,12 +19,11 @@ public class LoadManager {
 	public static int[] tamanhos = { 5, 50, 100, 200, 300, 400, 500, 600, 700, 800, 900, 1000 };
 	public static String[] tipos = { "best", "ale", "hard" };
 
-	public LoadManager(Boolean isHabilitarLog) throws NumberFormatException, IOException {
+	public LoadManager() {
 		super();
-		this.isLogHabilitado = isHabilitarLog;
 	}
 
-	private void carregarArquivo(String filename) throws NumberFormatException, IOException, URISyntaxException {
+	private void carregarArquivo(String filename) throws IOException {
 
 		File file = new File(filename);
 
@@ -43,6 +40,7 @@ public class LoadManager {
 				break;
 			}
 		}
+		br.close();
 		this.matrizSize = matrizSize;
 
 		// -----------------------------------
@@ -66,7 +64,7 @@ public class LoadManager {
 
 	}
 
-	public Preferencia importar(String fileName) throws IOException, NumberFormatException, URISyntaxException {
+	public Preferencia importar(String fileName) throws IOException {
 		this.carregarArquivo(fileName);
 		Preferencia p = new Preferencia();
 		p.setPrefHomens(importarMatrizPref(fileName, SexoEnum.HOMEM));
@@ -74,7 +72,7 @@ public class LoadManager {
 		return p;
 	}
 
-	public Preferencia importarTodos() throws IOException, NumberFormatException, URISyntaxException {
+	public Preferencia importarTodos() throws IOException {
 
 		Preferencia p = new Preferencia();
 
