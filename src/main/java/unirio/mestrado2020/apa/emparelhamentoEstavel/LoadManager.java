@@ -4,6 +4,8 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
+import java.net.URISyntaxException;
+import java.net.URL;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -24,7 +26,7 @@ public class LoadManager {
 		this.isLogHabilitado = isHabilitarLog;
 	}
 
-	private void carregarArquivo(String filename) throws NumberFormatException, IOException {
+	private void carregarArquivo(String filename) throws NumberFormatException, IOException, URISyntaxException {
 
 		File file = new File(filename);
 
@@ -64,7 +66,7 @@ public class LoadManager {
 
 	}
 
-	public Preferencia importar(String fileName) throws IOException {
+	public Preferencia importar(String fileName) throws IOException, NumberFormatException, URISyntaxException {
 		this.carregarArquivo(fileName);
 		Preferencia p = new Preferencia();
 		p.setPrefHomens(importarMatrizPref(fileName, SexoEnum.HOMEM));
@@ -72,7 +74,7 @@ public class LoadManager {
 		return p;
 	}
 
-	public Preferencia importarTodos() throws IOException {
+	public Preferencia importarTodos() throws IOException, NumberFormatException, URISyntaxException {
 
 		Preferencia p = new Preferencia();
 

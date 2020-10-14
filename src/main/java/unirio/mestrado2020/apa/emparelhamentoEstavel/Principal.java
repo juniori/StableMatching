@@ -1,6 +1,7 @@
 package unirio.mestrado2020.apa.emparelhamentoEstavel;
 
 import java.io.IOException;
+import java.net.URISyntaxException;
 import java.util.Scanner;
 
 /**
@@ -16,7 +17,7 @@ public class Principal {
 
 	static int tamanhos[] = { 5, 50, 100, 200, 300, 400, 500, 600, 700, 800, 900, 1000 };
 
-	public static void main(String[] args) throws NumberFormatException, IOException {
+	public static void main(String[] args) throws NumberFormatException, IOException, URISyntaxException {
 
 		if (args != null && args.length > 0 && args[0] != null) {
 			String p0 = String.valueOf(args[0]);
